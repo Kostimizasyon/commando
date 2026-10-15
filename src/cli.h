@@ -1,4 +1,4 @@
-#define INPUT 67
+#define INPUT 7
 
 #define HELP 0
 #define CODE 1
@@ -8,7 +8,7 @@
 #define COPY 5
 #define MODEL 6
 
-#define FLAG_COUNT 7
+#define FLAG_COUNT 8
 
 #define ERROR -1
 
