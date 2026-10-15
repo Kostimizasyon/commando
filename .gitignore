@@ -1,7 +1,12 @@
 *.o
 *.out
 
+*.exe
+commando
+
 .env
 *.env.*
 *.env
 env.*
+
+TODO.md

@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "cli.h"
 #include "llm.h"
@@ -16,7 +17,7 @@ int main(int argc, char **argv) {
 
   int i;
   int res;
-  char*inp_buf;
+  char* inp_buf;
   char* active_model = NULL;
 
   bool flags[FLAG_COUNT] = {0};
@@ -28,7 +29,7 @@ int main(int argc, char **argv) {
       puts("Bad args, pass -h or --help for help");
       return -1;
     }
-    
+
     if (res == INPUT) {
       size_t inp_size = sizeof(argv[i]);
       if (inp_size > INP_BUF_SIZE) {
@@ -61,7 +62,12 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  read_env(".env.local");
+  res = read_env("/home/gumusbulut/Coding2/projects/pc apps/C/commando/.env");
+
+  if (res != SUCESS) {
+    puts("Something went wrong");
+    return -1;
+  }
 
   char* api_key = getenv("API_KEY");
 
@@ -69,12 +75,17 @@ int main(int argc, char **argv) {
     puts("Unable to get API key env variable, check readme for info");
     return -1;
   }
+
   else if (flags[TOKEN]) {
     print_token_info(api_key);
     return 0;
   } 
-  else {
+  else if (flags[QUESTION] ^ flags[CODE]) {
     llm_out(inp_buf,api_key,active_model,1000);
+  }
+  else {
+      puts("Bad args, pass -h or --help for help");
+      return -1;
   }
 
   if (flags[PRICE]) {

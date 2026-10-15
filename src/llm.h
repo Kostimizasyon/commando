@@ -15,6 +15,8 @@
 		    make sure to always be as token efficient as possible do not use unnnecassary words in your output avoid using too\
 		    many tokens at all costs, Do not give an output that is longer than the passed OUT_BUF_SIZE chars which is " EZ_CAST(OUT_BUF_SIZE) "."
 
+
+
 void llm_out(const char*, const char*, const char*, int);
 
 void print_token_info(const char*);

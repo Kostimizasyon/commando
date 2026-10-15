@@ -14,4 +14,7 @@ commando: $(OBJS)
 clean:
 	rm -f chat $(OBJS)
 
+install: commando
+	install -m 755 commando /usr/local/bin/commando
+
 .PHONY: clean
