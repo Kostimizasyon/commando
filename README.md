@@ -33,7 +33,24 @@ Pick which model answers with -m.
 
 ## ENV FILES
 
-Create a .env file with your key
+Create a `.env` file with your key:
+
+```bash
+API_KEY=your_key_here
+```
+
+Then create an `env.h` next to the source so the program knows where to find it.
+Get the absolute path of your `.env` by running this in the folder that contains it:
+
+```bash
+realpath .env
+```
+
+Put the output in `env.h`:
+
+```c
+#define ENV_PATH "/home/user/projects/commando/.env"
+```
 
 ## FLAGS
 

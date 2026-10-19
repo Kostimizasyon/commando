@@ -123,7 +123,7 @@ llm_out(const char *inp, const char *api_key, const char *model, int max_tokens)
     char *out = send_request(req);
     if (!out) return;          // error already printed to stderr
 
-    puts(out);
+    printf("%s", out);
     free(out);                 // send_request returns malloc'd memory
 }
 

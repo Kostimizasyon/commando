@@ -1,8 +1,10 @@
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "../env.h"
 #include "cli.h"
 #include "llm.h"
 
@@ -33,7 +35,7 @@ int main(int argc, char **argv) {
     if (res == INPUT) {
 
       if ( argv[i][0] == '\"' ) {
-          size_t inp_size = sizeof(argv[i]);
+          size_t inp_size = strlen(argv[i]);
           if (inp_size > INP_BUF_SIZE) {
             printf("Too large input, max %d chars", INP_BUF_SIZE - 2);
             return -1;
@@ -52,20 +54,17 @@ int main(int argc, char **argv) {
         for ( i = i; i < argc ; i++) {
             if (match_arg(argv[i]) != INPUT) {
               break;
-        }
+            }
 
-        size_t used = strlen(inp_buf);
-        size_t need = strlen(argv[i]) + (used ? 1 : 0) + 1;
+          size_t used = strlen(inp_buf);
+          size_t need = strlen(argv[i]) + (used ? 1 : 0) + 1;
 
-        if (used + need > INP_BUF_SIZE)
-            break;
+          if (used + need > INP_BUF_SIZE)
+              break;
 
-        if (used) strcat(inp_buf, " ");
-        strcat(inp_buf, argv[i]);
-            //strcat(newarg)
-        }
-
-
+          if (used) strcat(inp_buf, " ");
+            strcat(inp_buf, argv[i]);
+          }
       }
 
     }
@@ -93,24 +92,23 @@ int main(int argc, char **argv) {
       return -1;
     }
   }
-
   // match flags
   if (flags[HELP]) {
     print_help();
     return 0;
   }
 
-  res = read_env("/home/gumusbulut/projects/commando/.env");
+  res = read_env(ENV_PATH);
 
   if (res != SUCESS) {
-    puts("Something went wrong with reading the env file.");
+    perror("Something went wrong with reading the env file.");
     return -1;
   }
   
   char* api_key = getenv("API_KEY");
 
   if (api_key == NULL) {
-    puts("Unable to get API key env variable, check readme for info on setting up a .env file");
+    perror("Unable to get API key env variable, check readme for info on setting up a .env file");
     return -1;
   }
 
@@ -120,11 +118,20 @@ int main(int argc, char **argv) {
   } 
 
   else if (flags[QUESTION] ^ flags[CODE]) {
-    llm_out(inp_buf,api_key,active_model,1000);
-  }
+    const char *flag = flags[QUESTION] ? "-q " : "-c ";
+    size_t curr = strlen(inp_buf);
+    size_t need = strlen(flag);
+
+    if (curr + need < INP_BUF_SIZE) {
+        memmove(inp_buf + need, inp_buf, curr + 1);  // +1 moves the '\0'
+        memcpy(inp_buf, flag, need);
+    }
+
+    llm_out(inp_buf, api_key, active_model, MAX_TOKEN);
+}
 
   else {
-      puts("Bad args, pass -h or --help for help");
+      perror("Bad args, pass -h or --help for help");
       return -1;
   }
 
@@ -132,8 +139,7 @@ int main(int argc, char **argv) {
     print_price_info();
   }
 
-  if (inp_buf) {
-    free(inp_buf);
-  }
+  if (inp_buf) free(inp_buf);
 
+  return 0;
 }
