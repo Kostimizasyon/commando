@@ -113,15 +113,23 @@ static char *send_request(inp_req req) {
     return out;
 }
 
-/* C has no default arguments: pass NULL to use FALLBACK_MODEL.
-   Returns malloc'd text (caller frees) or NULL on error. */
 void
 llm_out(const char *inp, const char *api_key, const char *model, int max_tokens) {
     if (!model) model = FALLBACK_MODEL;
-    inp_req req = { inp, api_key, model, 0 };
+    inp_req req = { inp, api_key, model, max_tokens };
+
+    // could create a . animation via multithreadding the request and wait for its return
+    printf("\033[94mThe model is thinking...\033[0m");
+    fflush(stdout);
 
     char *out = send_request(req);
+    printf("\r\033[K");
+    fflush(stdout);
     if (!out) return;          // error already printed to stderr
+
+    // flush buffer to overwrite
+
+    printf("\033[0;32m%s answered:\033[0m\n\n", model);
 
     printf("%s", out);
     free(out);                 // send_request returns malloc'd memory
@@ -149,7 +157,7 @@ print_price_info(void) {
 }
 
 void str_lower(char *s) {
-  for (; *s; s++)
+  for (; *s; s++) // ?
     *s = tolower((unsigned char)*s);
 }
 
@@ -175,3 +183,6 @@ match_model(char* model) {
 
 }
 
+void
+flush_buf() {
+}

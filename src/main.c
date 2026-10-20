@@ -52,7 +52,8 @@ int main(int argc, char **argv) {
         inp_buf[0] = '\0';
 
         for ( i = i; i < argc ; i++) {
-            if (match_arg(argv[i]) != INPUT) {
+            if (( res = match_arg(argv[i]) ) != INPUT) {
+              if (!flags[res]) flags[res] = true;
               break;
             }
 
@@ -84,9 +85,8 @@ int main(int argc, char **argv) {
     }
 
     // turn on whichever flag is passed
-    if (!flags[res]) {
-      flags[res] = true;
-    }
+    if (!flags[res]) flags[res] = true;
+
     else {
       puts("Bad args, pass -h or --help for help");
       return -1;
@@ -107,6 +107,11 @@ int main(int argc, char **argv) {
   
   char* api_key = getenv("API_KEY");
 
+  // allow the user to not pass any flag and still ask a question
+  if (flags[QUESTION] == false && flags[CODE] == false && flags[TOKEN] == false){
+    flags[QUESTION] = true;
+  }
+
   if (api_key == NULL) {
     perror("Unable to get API key env variable, check readme for info on setting up a .env file");
     return -1;
@@ -116,7 +121,6 @@ int main(int argc, char **argv) {
     print_token_info(api_key);
     return 0;
   } 
-
   else if (flags[QUESTION] ^ flags[CODE]) {
     const char *flag = flags[QUESTION] ? "-q " : "-c ";
     size_t curr = strlen(inp_buf);
@@ -141,5 +145,5 @@ int main(int argc, char **argv) {
 
   if (inp_buf) free(inp_buf);
 
-  return 0;
+ return 0;
 }
