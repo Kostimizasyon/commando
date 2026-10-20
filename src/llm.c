@@ -131,7 +131,9 @@ llm_out(const char *inp, const char *api_key, const char *model, int max_tokens)
 
     printf("\033[0;32m%s answered:\033[0m\n\n", model);
 
-    printf("%s", out);
+    printf("%s\n", out);
+
+    printf("\033[0;32m==============================================\033[0m\n");
     free(out);                 // send_request returns malloc'd memory
 }
 
